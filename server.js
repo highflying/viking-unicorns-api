@@ -14,7 +14,9 @@ server.get('/echo/:name', function (req, res, next) {
   return next();
 });
 
-server.get('/images/:q', function(req, res, next){
+server.get('/images/:q?', function(req, res, next){
+  var what = req.params.q || 'cats';
+  
   var connectSdk = new ConnectSdk (
     process.env.ConnectSDK_ApiKey,
     process.env.ConnectSDK_ApiSecret,
@@ -25,12 +27,13 @@ server.get('/images/:q', function(req, res, next){
     .search()
     .images()
     .withPage(1)
-    .withPageSize(1)
-    .withPhrase(req.params.q);
+    .withPageSize(10)
+    .withPhrase(what);
     
     search.execute(function(err, response) {
       if (err) throw err
-      res.send(JSON.stringify(response.images[0]))
+      randomIndex = Math.ceil(Math.random() * (response.images.length-1));
+      res.send(response.images[randomIndex]);
     });
     
     return next();
