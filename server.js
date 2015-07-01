@@ -86,11 +86,10 @@ server.get('/youtube/:q?', function(req, res, next){
    
   search(what, opts, function(err, results) {
     if(err) return console.log(err);
-    var link = results[Math.ceil(Math.random() * (results.length-1))].link;
-    var r = {
-      "embed" : "<iframe width='560' height='315' src='" + link + "' frameborder='0' allowfullscreen></iframe>"
-    }
-    res.send(r);
+    var vid_index = Math.ceil(Math.random() * (results.length-1));
+    var vid = results[vid_index];
+    vid["embed"] = "<iframe width='560' height='315' src='" + results[vid_index].link + "' frameborder='0' allowfullscreen></iframe>"
+    res.send(vid);
     return next();
   });
     
