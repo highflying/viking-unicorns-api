@@ -131,7 +131,9 @@ server.get("/article/:q?", function (req, res, next) {
     method: 'GET',
     data: {
       q:tag,
-      limit: 100
+      limit: 100,
+      sortBy: "dateCreated",
+      order: "desc",
     }
   };
 
@@ -142,7 +144,7 @@ server.get("/article/:q?", function (req, res, next) {
     headers: headers,
   });
 
-  client.get("/api/v3/search?q=" + encodeURIComponent(tag) + "&limit=" + request_data.data.limit, function (err, apiReq, apiRes, data) {
+  client.get("/api/v3/search?q=" + encodeURIComponent(tag) + "&limit=" + request_data.data.limit + "&sortBy=" request_data.data.sortBy + "&order=" + request_data.data.order, function (err, apiReq, apiRes, data) {
     if(err || !data) {
       res.send({});
       return next();
