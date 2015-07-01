@@ -4,7 +4,7 @@ var iPoolOAuth = require("./oauth-1-0a");
 var search = require('youtube-search');
 var csv        = require("csv");
 var request = require("request");
-var soundcloud = require('./index.js')
+var soundcloud = require('node-soundcloud');
  
 var server = restify.createServer({
   name: 'myapp',
@@ -63,7 +63,21 @@ server.get('/images/:q?', function(req, res, next){
 server.get('/soundcloud/:q?', function(req, res, next){
   var what = req.params.q || 'cats';
   
-  soundcloud(what).pipe(process.stdout)
+  soundcloud.init({
+    id: process.env.SOUNDCLOUD_KEY,
+    secret: process.env.SOUNDCLOUD_SECRET
+  });
+  
+  soundcloud.get('/tracks/?q='+what, function(err, tracks) {
+    if ( err ) {
+      throw err;
+    } else {
+      var randomIndex = Math.ceil(Math.random() * (tracks.length-1));
+      res.send(tracks[randomIndex]);
+      return next();
+      // console.log('track retrieved:', track);
+    }
+  });
 });
 
 server.get('/youtube/:q?', function(req, res, next){
