@@ -73,6 +73,7 @@ server.get('/instagram/:q?', function(req, res, next){
          
   });
 
+  what = what.replace(/[^a-zA-Z0-9]+/g, '');
  
   return instagram.tag_media_recent(what, function(err, medias, pagination, remaining, limit) {
     if(err){
@@ -96,7 +97,7 @@ server.get('/soundcloud/:q?', function(req, res, next){
     secret: process.env.SOUNDCLOUD_SECRET
   });
   
-  soundcloud.get('/tracks/?q='+what, function(err, tracks) {
+  soundcloud.get('/tracks/?q='+encodeURIComponent(what), function(err, tracks) {
     if ( err ) {
       throw err;
     } else {
@@ -214,6 +215,7 @@ server.get("/article/:q?", function (req, res, next) {
 
   client.get("/api/v3/search?q=" + encodeURIComponent(tag) + "&limit=" + request_data.data.limit + "&sortBy=" + request_data.data.sortBy + "&order=" + request_data.data.order, function (err, apiReq, apiRes, data) {
     if(err || !data) {
+      console.error(err);
       res.send({});
       return next();
     }
@@ -228,6 +230,11 @@ server.get("/article/:q?", function (req, res, next) {
       if(data.documents[i].type === "article" && data.documents[i].publishedURL) {
         doc = data.documents[i]; 
       }
+    }
+
+    if(!doc) {
+      res.send({});
+      return next();
     }
 
     var article = {
