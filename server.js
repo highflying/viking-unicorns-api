@@ -13,6 +13,14 @@ var server = restify.createServer({
 server.use(restify.acceptParser(server.acceptable));
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
+
+server.use(
+  function crossOrigin(req,res,next){
+    res.header("Access-Control-Allow-Origin", "*");
+    // res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    return next();
+  }
+);
  
 server.get('/echo/:name', function (req, res, next) {
   res.send(req.params);
@@ -190,7 +198,6 @@ server.get("/article/:q?", function (req, res, next) {
       article.url = "http://" + article.url;
     }
 
-    var request = require('request');
     request(article.url, function (error, response, body) {
       if (error || response.statusCode !== 200) {
         console.error(error);
