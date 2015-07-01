@@ -1,8 +1,13 @@
 var restify = require('restify');
 var ConnectSdk = require("connectsdk");
+<<<<<<< HEAD
 var googleapis = require('googleapis');
 var search = require('youtube-search');
 
+=======
+var csv        = require("csv");
+ 
+>>>>>>> 4744577c6c235f70bfb0fc05c822c18214e582c2
 var server = restify.createServer({
   name: 'myapp',
   version: '1.0.0'
@@ -33,16 +38,23 @@ server.get('/images/:q?', function(req, res, next){
     .withPhrase(what)
     ;
     
-    search.execute(function(err, response) {
-      if (err) throw err
+    return search.execute(function(err, response) {
+      if (err) {
+        console.error(err);
+        res.send({});
+        return next();
+      }
+
       var randomIndex = Math.ceil(Math.random() * (response.images.length-1));
       res.send(response.images[randomIndex]);
+
+      return next();
     });
     
-    return next();
 
 });
 
+<<<<<<< HEAD
 server.get('/youtube/:q?', function(req, res, next){
   var what = req.params.q || 'cats';
   
@@ -90,6 +102,73 @@ server.get('/youtube/:q?', function(req, res, next){
 });
 
  
+=======
+var translations = {
+  cats: 'katzen',
+  cat: 'katzen',
+};
+
+server.get('/adverts/:q?', function(req, res, next){
+  var what = req.params.q || 'cats';
+
+  if(translations[what]) {
+    what = translations[what];
+  }
+
+  var client = restify.createStringClient({
+    url: "http://adzeile.ladenzeile.de"
+  });
+  
+// GET request to: adzeile.ladenzeile.de/adzeile
+// with the following GET params: 
+// 1- ad=ad-1D8B6F8CB4AB
+// 2- format=csv
+// 3- items=8
+// 4- kw=kleider
+// 5- subid=
+// 6- r=http://www.ladenzeile.de
+// what = "kleider";
+  var params = "ad=ad-1D8B6F8CB4AB&format=csv&items=8&kw=" + encodeURIComponent(what) + "&subid=&r=http://www.ladenzeile.de";
+
+  var url = "/adzeile?" + params;
+
+  client.get(url, function (err, apiReq, apiRes, csvText) {
+
+    if(err) {
+      res.send({});
+      return next();
+    }
+
+    csv.parse(csvText, {trim: true}, function(err, data){
+
+      var headers = data.shift();
+
+
+      headers = headers.map(function (header) {
+        return header.replace(' ', '_');
+      });
+
+      var json = {
+        adverts: [],
+      };
+
+      data.forEach(function(row) {
+        var advert = {};
+        for(var i = 0; i < headers.length; i++) {
+          advert[headers[i]] = row[i];
+        }
+
+        json.adverts.push(advert);
+      });
+
+      res.send(json);
+
+      return next();
+    });
+  });
+});
+
+>>>>>>> 4744577c6c235f70bfb0fc05c822c18214e582c2
 server.listen(process.env.PORT || 8080, function () {
   console.log('%s listening at %s', server.name, server.url);
 });
