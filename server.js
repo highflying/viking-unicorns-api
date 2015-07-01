@@ -5,6 +5,7 @@ var search = require('youtube-search');
 var csv        = require("csv");
 var request = require("request");
 var soundcloud = require('node-soundcloud');
+var instagram = require('instagram-node').instagram();
  
 var server = restify.createServer({
   name: 'myapp',
@@ -60,6 +61,31 @@ server.get('/images/:q?', function(req, res, next){
 
 });
 
+server.get('/instagram/:q?', function(req, res, next){
+  var what = req.params.q || 'cats';
+  
+  instagram.use({ 
+          client_id: process.env.INSTAGRAM_ID,
+          client_secret:  process.env.INSTAGRAM_SECRET
+    
+  });
+
+ 
+  return instagram.tag_media_recent(what, function(err, medias, pagination, remaining, limit) {
+    if(err){
+        console.error(err);
+        res.send({});
+        return next();
+    }
+    var randomIndex = Math.ceil(Math.random() * (medias.length-1));
+    res.send(medias[randomIndex]);
+    return next();
+      
+  });
+  
+  
+});
+
 server.get('/soundcloud/:q?', function(req, res, next){
   var what = req.params.q || 'cats';
   
@@ -79,6 +105,10 @@ server.get('/soundcloud/:q?', function(req, res, next){
     }
   });
 });
+
+
+
+
 
 server.get('/youtube/:q?', function(req, res, next){
   var what = req.params.q || 'cats';
