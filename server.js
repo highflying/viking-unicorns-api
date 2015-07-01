@@ -157,7 +157,7 @@ server.get("/article/:q?", function (req, res, next) {
     while(!doc && n <= 100) {
       n++;
       var i = parseInt(Math.random() * count);
-      if(data.documents[i].type === "article") {
+      if(data.documents[i].type === "article" && data.documents[i].publishedURL) {
         doc = data.documents[i]; 
       }
     }
@@ -168,10 +168,13 @@ server.get("/article/:q?", function (req, res, next) {
       content: doc.content || "",
       leadtext: doc.leadtext || "",
       date: new Date(doc.dateCreated),
-      url: "http://" + doc.publishedURL,
-      // src: doc,
+      url: doc.publishedURL,
+      src: doc,
     };
 
+    if(!/^http/.exec(article.url)){
+      article.url = "http://" + article.url;
+    }
 
     var request = require('request');
     request(article.url, function (error, response, body) {
