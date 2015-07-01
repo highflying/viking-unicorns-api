@@ -9,9 +9,11 @@
   "author": "",
   "dependencies": {
     "connectsdk": "^1.0.4",
+    "crypto-js": "^3.1.5",
+    "csv": "^0.4.5",
     "googleapis": "^2.0.6",
+    "request": "^2.58.0",
     "restify": "^3.0.3",
-    "youtube-search": "^1.0.3",
-    "csv": "^0.4.5"
+    "youtube-search": "^1.0.3"
   }
 }

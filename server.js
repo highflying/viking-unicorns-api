@@ -1,8 +1,9 @@
 var restify = require('restify');
 var ConnectSdk = require("connectsdk");
-var googleapis = require('googleapis');
+var iPoolOAuth = require("./oauth-1-0a");
 var search = require('youtube-search');
 var csv        = require("csv");
+var request = require("request");
  
 var server = restify.createServer({
   name: 'myapp',
@@ -106,11 +107,88 @@ function youtube_parser(url){
     }
 }
 
- 
 var translations = {
   cats: 'katzen',
   cat: 'katzen',
 };
+
+server.get("/article/:q?", function (req, res, next) {
+  var tag = req.params.q || 'cats';
+
+  if(translations[tag]) {
+    tag = translations[tag];
+  }
+
+  var oauth = new iPoolOAuth({
+    consumer: {
+      public: process.env.IPOOL_PUBLIC,
+      secret: process.env.IPOOL_SECRET,
+    }
+  });
+
+  var request_data = {
+    url: "https://ipool.s.asideas.de/api/v3/search",
+    method: 'GET',
+    data: {
+      q:tag,
+      limit: 100
+    }
+  };
+
+  var headers = oauth.toHeader(oauth.authorize(request_data));
+
+  var client = restify.createJsonClient({
+    url: "https://ipool.s.asideas.de",
+    headers: headers,
+  });
+
+  client.get("/api/v3/search?q=" + encodeURIComponent(tag) + "&limit=" + request_data.data.limit, function (err, apiReq, apiRes, data) {
+    if(err || !data) {
+      res.send({});
+      return next();
+    }
+
+    var count = data.documents.length;
+
+    var doc;
+    var n = 0;
+    while(!doc && n <= 100) {
+      n++;
+      var i = parseInt(Math.random() * count);
+      if(data.documents[i].type === "article") {
+        doc = data.documents[i]; 
+      }
+    }
+
+    var article = {
+      title: doc.title || "",
+      subtitle: doc.subtitle || "",
+      content: doc.content || "",
+      leadtext: doc.leadtext || "",
+      date: new Date(doc.dateCreated),
+      url: "http://" + doc.publishedURL,
+      // src: doc,
+    };
+
+
+    var request = require('request');
+    request(article.url, function (error, response, body) {
+      if (error || response.statusCode !== 200) {
+        console.error(error);
+        res.send(article);
+        return next();
+      }
+
+      var matches = /<meta property="og:image" content="([^"]+?)"\/>/.exec(body);
+      if(matches) {
+        article.imageUrl = matches[1];
+      }
+      res.send(article);
+      return next();
+    });
+  });
+});
+
 
 server.get('/adverts/:q?', function(req, res, next){
   var what = req.params.q || 'cats';
