@@ -4,6 +4,7 @@ var iPoolOAuth = require("./oauth-1-0a");
 var search = require('youtube-search');
 var csv        = require("csv");
 var request = require("request");
+var soundcloud = require('./index.js')
  
 var server = restify.createServer({
   name: 'myapp',
@@ -49,6 +50,12 @@ server.get('/images/:q?', function(req, res, next){
     });
     
 
+});
+
+server.get('/soundcloud/:q?', function(req, res, next){
+  var what = req.params.q || 'cats';
+  
+  soundcloud(what).pipe(process.stdout)
 });
 
 server.get('/youtube/:q?', function(req, res, next){
