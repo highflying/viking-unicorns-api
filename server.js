@@ -1,13 +1,9 @@
 var restify = require('restify');
 var ConnectSdk = require("connectsdk");
-<<<<<<< HEAD
 var googleapis = require('googleapis');
 var search = require('youtube-search');
-
-=======
 var csv        = require("csv");
  
->>>>>>> 4744577c6c235f70bfb0fc05c822c18214e582c2
 var server = restify.createServer({
   name: 'myapp',
   version: '1.0.0'
@@ -54,7 +50,6 @@ server.get('/images/:q?', function(req, res, next){
 
 });
 
-<<<<<<< HEAD
 server.get('/youtube/:q?', function(req, res, next){
   var what = req.params.q || 'cats';
   
@@ -102,7 +97,6 @@ server.get('/youtube/:q?', function(req, res, next){
 });
 
  
-=======
 var translations = {
   cats: 'katzen',
   cat: 'katzen',
@@ -168,7 +162,7 @@ server.get('/adverts/:q?', function(req, res, next){
   });
 });
 
->>>>>>> 4744577c6c235f70bfb0fc05c822c18214e582c2
+
 server.listen(process.env.PORT || 8080, function () {
   console.log('%s listening at %s', server.name, server.url);
 });
