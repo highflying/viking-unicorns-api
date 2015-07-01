@@ -61,13 +61,13 @@ server.get('/images/:q?', function(req, res, next){
 
 });
 
+// instagram
 server.get('/instagram/:q?', function(req, res, next){
   var what = req.params.q || 'cats';
   
   instagram.use({ 
           client_id: process.env.INSTAGRAM_ID,
           client_secret:  process.env.INSTAGRAM_SECRET
-    
   });
 
  
@@ -80,7 +80,6 @@ server.get('/instagram/:q?', function(req, res, next){
     var randomIndex = Math.ceil(Math.random() * (medias.length-1));
     res.send(medias[randomIndex]);
     return next();
-      
   });
   
   
