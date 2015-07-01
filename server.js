@@ -31,17 +31,23 @@ server.get('/images/:q?', function(req, res, next){
     .withPageSize(10)
     .withPhrase(what);
     
-    search.execute(function(err, response) {
-      if (err) throw err
+    return search.execute(function(err, response) {
+      if (err) {
+        console.error(err);
+        res.send({});
+        return next();
+      }
+
       var randomIndex = Math.ceil(Math.random() * (response.images.length-1));
       res.send(response.images[randomIndex]);
+
+      return next();
     });
     
-    return next();
 
 });
 
-server.get('/adverts/:q?', function(req, res){
+server.get('/adverts/:q?', function(req, res, next){
   var what = req.params.q || 'cats';
 
   var client = restify.createStringClient({
@@ -64,7 +70,8 @@ server.get('/adverts/:q?', function(req, res){
   client.get(url, function (err, apiReq, apiRes, csvText) {
 
     if(err) {
-      return res.send({});
+      res.send({});
+      return next();
     }
 
     csv.parse(csvText, {trim: true}, function(err, data){
@@ -89,7 +96,9 @@ server.get('/adverts/:q?', function(req, res){
         json.adverts.push(advert);
       });
 
-      return res.send(json);
+      res.send(json);
+
+      return next();
     });
   });
 });
