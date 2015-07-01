@@ -110,13 +110,20 @@ function youtube_parser(url){
 var translations = {
   cats: 'katzen',
   cat: 'katzen',
+  football: 'fussball',
+  soccer: 'fussball',
+  car: "auto",
+  cars: "autos",
+  automobile: "automobil",
+  automobiles: "autos",
 };
 
 server.get("/article/:q?", function (req, res, next) {
   var tag = req.params.q || 'cats';
+  var lowerTag = tag.toLowercase();
 
-  if(translations[tag]) {
-    tag = translations[tag];
+  if(translations[lowerTag]) {
+    tag = translations[lowerTag];
   }
 
   var oauth = new iPoolOAuth({
