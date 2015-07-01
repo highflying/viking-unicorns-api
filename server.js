@@ -88,12 +88,23 @@ server.get('/youtube/:q?', function(req, res, next){
     if(err) return console.log(err);
     var vid_index = Math.ceil(Math.random() * (results.length-1));
     var vid = results[vid_index];
-    vid["embed"] = "<iframe width='560' height='315' src='" + results[vid_index].link + "' frameborder='0' allowfullscreen></iframe>"
+    vid["id"] = youtube_parser(vid.link);
+    vid["embed"] = "<iframe width='560' height='315' src='" + vid.link + "' frameborder='0' allowfullscreen></iframe>";
     res.send(vid);
     return next();
   });
     
 });
+
+function youtube_parser(url){
+    var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/;
+    var match = url.match(regExp);
+    if (match&&match[7].length==11){
+        return match[7];
+    }else{
+        alert("Url incorrecta");
+    }
+}
 
  
 var translations = {
