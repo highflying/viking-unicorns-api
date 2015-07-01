@@ -187,6 +187,19 @@ server.get("/article/:q?", function (req, res, next) {
       src: doc,
     };
 
+    if(!article.leadtext || article.leadtext === "") {
+      var matches = /^(.*?)\n/.exec(article.content);
+      if(matches) {
+        article.leadtext = matches[1];
+      } else {
+        var matches2 = /^(.*?<\/p>)/.exec(article.content);
+        if(matches2) {
+          article.leadtext = matches2[1];
+        }
+
+      }
+    }
+
     if(!/^http/.exec(article.url)){
       article.url = "http://" + article.url;
     }
