@@ -66,8 +66,11 @@ server.get('/instagram/:q?', function(req, res, next){
   var what = req.params.q || 'cats';
   
   instagram.use({ 
-          client_id: process.env.INSTAGRAM_ID,
-          client_secret:  process.env.INSTAGRAM_SECRET
+      client_id: "7d6381c5bd7d42419973dc31bb42f72f",
+          client_secret: "a1b8a5d732a54722b33d6de3b733d56d"
+          // client_id: process.env.INSTAGRAM_ID,
+          // client_secret:  process.env.INSTAGRAM_SECRET
+         
   });
 
  
