@@ -120,7 +120,7 @@ var translations = {
 
 server.get("/article/:q?", function (req, res, next) {
   var tag = req.params.q || 'cats';
-  var lowerTag = tag.toLowercase();
+  var lowerTag = tag.toLowerCase();
 
   if(translations[lowerTag]) {
     tag = translations[lowerTag];
