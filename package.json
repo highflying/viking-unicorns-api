@@ -8,6 +8,7 @@
   },
   "author": "",
   "dependencies": {
+    "connectsdk": "^1.0.4",
     "restify": "^3.0.3"
   }
 }
