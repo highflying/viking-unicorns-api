@@ -1,6 +1,8 @@
 var restify = require('restify');
 var ConnectSdk = require("connectsdk");
- 
+var googleapis = require('googleapis');
+var search = require('youtube-search');
+
 var server = restify.createServer({
   name: 'myapp',
   version: '1.0.0'
@@ -28,7 +30,8 @@ server.get('/images/:q?', function(req, res, next){
     .images()
     .withPage(1)
     .withPageSize(10)
-    .withPhrase(what);
+    .withPhrase(what)
+    ;
     
     search.execute(function(err, response) {
       if (err) throw err
@@ -39,6 +42,53 @@ server.get('/images/:q?', function(req, res, next){
     return next();
 
 });
+
+server.get('/youtube/:q?', function(req, res, next){
+  var what = req.params.q || 'cats';
+  
+  // var params = {
+  //     part: 'snippet',
+  //     maxResults: 50,
+  //     order: 'viewCount',
+  //     q: what,
+  //     chart: 'mostPopular',
+  //     auth: process.env.YouTube_ApiKey
+  // };
+  
+  
+  // googleapis.youtube('v3').videos.list(params, function(err, resp) {
+  //   if (err) {
+  //     console.log('An error occured', err);
+  //     return;
+  //   }
+  //   // Got the response from custom search
+  //   console.log('Result: ' + resp.searchInformation.formattedTotalResults);
+  //   if (resp.items && resp.items.length > 0) {
+  //     console.log('First result name is ' + resp.items[0].title);
+  //   }
+    
+  //   return next();
+  // });
+
+
+  
+  var opts = {
+    maxResults: 10,
+    key: process.env.YouTube_ApiKey
+  };
+   
+  search(what, opts, function(err, results) {
+    if(err) return console.log(err);
+    var link = results[Math.ceil(Math.random() * (results.length-1))].link;
+    var r = {
+      "embed" : "<iframe width='560' height='315' src='" + link + "' frameborder='0' allowfullscreen></iframe>"
+    }
+    res.send(r);
+    return next();
+  });
+    
+});
+
  
 server.listen(process.env.PORT || 8080, function () {
   console.log('%s listening at %s', server.name, server.url);

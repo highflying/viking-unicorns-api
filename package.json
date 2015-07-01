@@ -9,6 +9,8 @@
   "author": "",
   "dependencies": {
     "connectsdk": "^1.0.4",
-    "restify": "^3.0.3"
+    "googleapis": "^2.0.6",
+    "restify": "^3.0.3",
+    "youtube-search": "^1.0.3"
   }
 }
