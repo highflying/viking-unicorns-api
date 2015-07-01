@@ -4,6 +4,8 @@ var iPoolOAuth = require("./oauth-1-0a");
 var search = require('youtube-search');
 var csv        = require("csv");
 var request = require("request");
+var soundcloud = require('node-soundcloud');
+var instagram = require('instagram-node').instagram();
  
 var server = restify.createServer({
   name: 'myapp',
@@ -58,6 +60,57 @@ server.get('/images/:q?', function(req, res, next){
     
 
 });
+
+// instagram
+server.get('/instagram/:q?', function(req, res, next){
+  var what = req.params.q || 'cats';
+  
+  instagram.use({ 
+      client_id: "7d6381c5bd7d42419973dc31bb42f72f",
+          client_secret: "a1b8a5d732a54722b33d6de3b733d56d"
+          // client_id: process.env.INSTAGRAM_ID,
+          // client_secret:  process.env.INSTAGRAM_SECRET
+         
+  });
+
+ 
+  return instagram.tag_media_recent(what, function(err, medias, pagination, remaining, limit) {
+    if(err){
+        console.error(err);
+        res.send({});
+        return next();
+    }
+    var randomIndex = Math.ceil(Math.random() * (medias.length-1));
+    res.send(medias[randomIndex]);
+    return next();
+  });
+  
+  
+});
+
+server.get('/soundcloud/:q?', function(req, res, next){
+  var what = req.params.q || 'cats';
+  
+  soundcloud.init({
+    id: process.env.SOUNDCLOUD_KEY,
+    secret: process.env.SOUNDCLOUD_SECRET
+  });
+  
+  soundcloud.get('/tracks/?q='+what, function(err, tracks) {
+    if ( err ) {
+      throw err;
+    } else {
+      var randomIndex = Math.ceil(Math.random() * (tracks.length-1));
+      res.send(tracks[randomIndex]);
+      return next();
+      // console.log('track retrieved:', track);
+    }
+  });
+});
+
+
+
+
 
 server.get('/youtube/:q?', function(req, res, next){
   var what = req.params.q || 'cats';
