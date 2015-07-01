@@ -32,7 +32,7 @@ server.get('/images/:q?', function(req, res, next){
     
     search.execute(function(err, response) {
       if (err) throw err
-      randomIndex = Math.ceil(Math.random() * (response.images.length-1));
+      var randomIndex = Math.ceil(Math.random() * (response.images.length-1));
       res.send(response.images[randomIndex]);
     });
     
