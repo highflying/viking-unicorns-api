@@ -47,8 +47,17 @@ server.get('/images/:q?', function(req, res, next){
 
 });
 
+var translations = {
+  cats: 'katzen',
+  cat: 'katzen',
+};
+
 server.get('/adverts/:q?', function(req, res, next){
   var what = req.params.q || 'cats';
+
+  if(translations[what]) {
+    what = translations[what];
+  }
 
   var client = restify.createStringClient({
     url: "http://adzeile.ladenzeile.de"
